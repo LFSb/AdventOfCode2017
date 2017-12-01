@@ -21,9 +21,7 @@ public static class Days
 
     for(var i = 0; i < input.Length; i++)
     {
-      var nextIndex = CalculateNextIndex(i, offSet, input.Length);
-
-      if(input[i] == input[nextIndex])
+      if(input[i] == input[CalculateNextIndex(i, offSet, input.Length)])
       {
         output += input[i];
       }
