@@ -12,7 +12,7 @@ public static class Days
   {
     var input = Day1Input.Select(x => int.Parse($"{x}")).ToArray();
 
-    return CalculateSum(input, input.Length / 2).ToString();
+    return $"- Part 1: {CalculateSum(input, 1)}- Part 2: {CalculateSum(input, input.Length / 2).ToString()}";
   }
 
   private static int CalculateSum(int[] input, int offSet)
@@ -40,5 +40,10 @@ public static class Days
     }
 
     return currentIndex + offSet - maxLength;
+  }
+
+  public static string Day2()
+  {
+    return string.Empty;
   }
 }
