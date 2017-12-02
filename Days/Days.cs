@@ -15,7 +15,7 @@ public static class Days
 
   private static string OutputResult(string part1, string part2)
   {
-    return $"- Part 1: {part1}- Part 2: {part2}";
+    return $"{Environment.NewLine}- Part 1: {part1}{Environment.NewLine}- Part 2: {part2}";
   }
 
   public static string Day1()
@@ -71,7 +71,10 @@ public static class Days
       checkSum2 += CalculateDay2CheckSumPart2(line);
     }
 
-    return OutputResult(checkSum.ToString(), checkSum2.ToString());
+    return OutputResult(
+      checkSum.ToString(), 
+      checkSum2.ToString()
+    );
   }
 
   private static int[] ParseDay2Input(string line)
@@ -104,5 +107,10 @@ public static class Days
     }
 
     return 0; //This shouldn't happen..right?
+  }
+
+  public static string Day3()
+  {
+    return OutputResult("","");
   }
 }
