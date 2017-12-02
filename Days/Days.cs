@@ -13,11 +13,19 @@ public static class Days
 
   private static string Day2TestInput = "Days/Input/Day2Test.txt";
 
+  private static string OutputResult(string part1, string part2)
+  {
+    return $"- Part 1: {part1}- Part 2: {part2}";
+  }
+
   public static string Day1()
   {
     var input = Day1Input.Select(x => int.Parse($"{x}")).ToArray();
 
-    return $"- Part 1: {CalculateSum(input, 1)}- Part 2: {CalculateSum(input, input.Length / 2).ToString()}";
+    return OutputResult(
+      CalculateSum(input, 1).ToString(), 
+      CalculateSum(input, input.Length / 2).ToString()
+    );
   }
 
   private static int CalculateSum(int[] input, int offSet)
@@ -63,7 +71,7 @@ public static class Days
       checkSum2 += CalculateDay2CheckSumPart2(line);
     }
 
-    return $"- Part 1: {checkSum.ToString()}- Part 2: {checkSum2.ToString()}";
+    return OutputResult(checkSum.ToString(), checkSum2.ToString());
   }
 
   private static int[] ParseDay2Input(string line)
