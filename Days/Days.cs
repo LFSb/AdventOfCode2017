@@ -56,12 +56,19 @@ public static class Days
       checkSum += CalculateDay2CheckSumPart1(line);
     }
 
-    return $"Test: {checkSum.ToString()}";
+    var checkSum2 = 0;
+
+    foreach(var line in content)
+    {
+      checkSum2 += CalculateDay2CheckSumPart2(line);
+    }
+
+    return $"- Part 1: {checkSum.ToString()}- Part 2: {checkSum2.ToString()}";
   }
 
   private static int[] ParseDay2Input(string line)
   {
-    return line.Split(new[] { "  ", " ", "\t"}, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse($"{x}")).OrderBy(x => x).ToArray();
+    return line.Split(new[] { "  ", " ", "\t" }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse($"{x}")).OrderBy(x => x).ToArray();
   }
 
   private static int CalculateDay2CheckSumPart1(string line)
@@ -75,6 +82,19 @@ public static class Days
   {
     var input = ParseDay2Input(line);
 
-    throw new NotImplementedException();
+    for (var i = 0; i < input.Length; i++)
+    {
+      var candidates = input.Where(x => x != input[i]).ToArray(); //Create a new array from all values that are not the current value. There's probably a better way to do this.
+
+      foreach(var candidate in candidates)
+      {
+        if(input[i] % candidate == 0)
+        {
+          return input[i] / candidate;
+        }
+      }
+    }
+
+    return 0;
   }
 }
