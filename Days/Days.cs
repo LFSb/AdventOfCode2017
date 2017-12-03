@@ -119,9 +119,10 @@ public static class Days
 
     var p1 = WalkGrid(grid, gridSize, 265149, true);
 
+    //We wanna reset the grid before going for P2.
     grid = new int[gridSize, gridSize];
 
-    var p2 = WalkGrid(grid, gridSize, 265149, false);
+    var p2 = WalkGrid(grid, gridSize, 265149);
 
     return OutputResult(p1.ToString(), p2.ToString());
   }
@@ -134,7 +135,7 @@ public static class Days
     Down
   }
 
-  private static int WalkGrid(int[,] grid, int gridSize, int target, bool p1)
+  private static int WalkGrid(int[,] grid, int gridSize, int target, bool p1 = false)
   {
     var currentStepAmount = 1;
     var secondStep = false;
