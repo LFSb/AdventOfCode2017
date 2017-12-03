@@ -145,7 +145,7 @@ public static class Days
 
     int x, y;
     x = y = startingCoord;
-    
+
     int nextValue = 1;
     grid[x, y] = 1;
 
@@ -164,18 +164,10 @@ public static class Days
 
         switch (direction)
         {
-          case Direction.Right:
-            direction = Direction.Up;
-            break;
-          case Direction.Up:
-            direction = Direction.Left;
-            break;
-          case Direction.Left:
-            direction = Direction.Down;
-            break;
-          case Direction.Down:
-            direction = Direction.Right;
-            break;
+          case Direction.Right: direction = Direction.Up; break;
+          case Direction.Up: direction = Direction.Left; break;
+          case Direction.Left: direction = Direction.Down; break;
+          case Direction.Down: direction = Direction.Right; break;
         }
       }
 
