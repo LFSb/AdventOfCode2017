@@ -11,7 +11,9 @@ public static class Days
 
   private const string Day2Input = "Days/Input/Day2.txt";
 
-  private static string Day2TestInput = "Days/Input/Day2Test.txt";
+  private const int Day3Input = 265149;
+
+  private const int Day3TestInput = 1;
 
   private static string OutputResult(string part1, string part2)
   {
@@ -23,7 +25,7 @@ public static class Days
     var input = Day1Input.Select(x => int.Parse($"{x}")).ToArray();
 
     return OutputResult(
-      CalculateSum(input, 1).ToString(), 
+      CalculateSum(input, 1).ToString(),
       CalculateSum(input, input.Length / 2).ToString()
     );
   }
@@ -66,13 +68,13 @@ public static class Days
 
     var checkSum2 = 0;
 
-    foreach(var line in content)
+    foreach (var line in content)
     {
       checkSum2 += CalculateDay2CheckSumPart2(line);
     }
 
     return OutputResult(
-      checkSum.ToString(), 
+      checkSum.ToString(),
       checkSum2.ToString()
     );
   }
@@ -97,9 +99,9 @@ public static class Days
     {
       var candidates = input.Where(x => x != input[i]).ToArray(); //Create a new array from all values that are not the current value. There's probably a better way to do this.
 
-      foreach(var candidate in candidates)
+      foreach (var candidate in candidates)
       {
-        if(input[i] % candidate == 0)
+        if (input[i] % candidate == 0)
         {
           return input[i] / candidate;
         }
@@ -111,6 +113,110 @@ public static class Days
 
   public static string Day3()
   {
-    return OutputResult("","");
+    var gridSize = 600;
+
+    var grid = new int[gridSize, gridSize];
+
+    var p1 = WalkGrid(grid, gridSize, 265149, true);
+
+    grid = new int[gridSize, gridSize];
+
+    var p2 = WalkGrid(grid, gridSize, 265149, false);
+
+    return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  public enum Direction
+  {
+    Right,
+    Up,
+    Left,
+    Down
+  }
+
+  private static int WalkGrid(int[,] grid, int gridSize, int target, bool p1)
+  {
+    var currentStepAmount = 1;
+    var secondStep = false;
+    var rotationCountdown = 1;
+    var direction = Direction.Right;
+
+    var startingCoord = (gridSize / 2) - 1; //Start from the middle of the grid.
+
+    int x, y;
+    x = y = startingCoord;
+    
+    int nextValue = 1;
+    grid[x, y] = 1;
+
+    while (nextValue < target)
+    {
+      if (rotationCountdown == 0)
+      {
+        if (secondStep)
+        {
+          ++currentStepAmount; //The amount of second steps we make directly impacts the amount of steps we should take until rotation.
+        }
+
+        secondStep = !secondStep;
+
+        rotationCountdown = currentStepAmount;
+
+        switch (direction)
+        {
+          case Direction.Right:
+            direction = Direction.Up;
+            break;
+          case Direction.Up:
+            direction = Direction.Left;
+            break;
+          case Direction.Left:
+            direction = Direction.Down;
+            break;
+          case Direction.Down:
+            direction = Direction.Right;
+            break;
+        }
+      }
+
+      switch (direction)
+      {
+        case Direction.Right: ++x; break;
+        case Direction.Up: --y; break;
+        case Direction.Left: --x; break;
+        case Direction.Down: ++y; break;
+      }
+
+      --rotationCountdown;
+
+      nextValue = CalculateNextValue(grid, x, y, nextValue, p1);
+
+      grid[x, y] = nextValue;
+    }
+
+    return p1
+      ? Math.Abs(x - startingCoord) + Math.Abs(y - startingCoord) //Manhattan Distance from one point to another is the sum of the absolute difference between the two coordinates.
+      : nextValue;
+  }
+
+  //For part 1, just give us the next value. 
+  //For part 2, add the sum of all surrounding values.
+  private static int CalculateNextValue(int[,] grid, int x, int y, int nextValue, bool p1)
+  {
+    if (p1)
+    {
+      return ++nextValue;
+    }
+
+    nextValue = grid[x - 1, y - 1]
+          + grid[x - 1, y]
+          + grid[x - 1, y + 1]
+          + grid[x, y - 1]
+          + grid[x, y + 1]
+          + grid[x + 1, y - 1]
+          + grid[x + 1, y]
+          + grid[x + 1, y + 1];
+
+    return nextValue;
   }
 }
