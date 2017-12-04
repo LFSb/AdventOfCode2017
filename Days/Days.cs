@@ -226,27 +226,12 @@ public static class Days
   {
     var input = File.ReadAllLines(Day4Input);
 
-    var p1 = 0;
-
-    foreach (var line in input)
-    {
-      if (line
-        .Split(' ')
+    var p1 = input.Count(f => f.Split(' ')
         .GroupBy(x => x)
         .ToDictionary(y => y, z => z.Count())
-        .All(x => x.Value == 1))
-      {
-        p1++;
-      }
+        .All(x => x.Value == 1));
 
-    }
-
-    var p2 = 0;
-
-    foreach (var line in input)
-    {
-      if (line
-        .Split(' ')
+    var p2 = input.Count(f => f.Split(' ')
         .GroupBy(x => x.Length)
         .Where(x => x
           .Count() > 1)
@@ -258,12 +243,7 @@ public static class Days
           )
         )
         .GroupBy(y => string.Join(",", y))
-        .All(y => y.Count() == 1)
-      )
-      {
-        p2++;
-      }
-    }
+        .All(y => y.Count() == 1));
 
     return OutputResult(p1.ToString(), p2.ToString());
   }
