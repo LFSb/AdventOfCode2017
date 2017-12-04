@@ -9,5 +9,7 @@ public class Program
     Console.WriteLine("Day 2:" + Days.Day2());
 
     Console.WriteLine("Day 3:" + Days.Day3());
+
+    Console.WriteLine("Day 4:" + Days.Day4());
   }
 }

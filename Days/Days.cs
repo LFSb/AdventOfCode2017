@@ -15,6 +15,15 @@ public static class Days
 
   private const int Day3TestInput = 1;
 
+  private const string Day4Input = "Days/Input/Day4.txt";
+
+  private static string[] Day4TestInput = new string[]
+  {
+    "aa bb cc dd ee",
+    "aa bb cc dd aa",
+    "aa bb cc dd aaa"
+  };
+
   private static string OutputResult(string part1, string part2)
   {
     return $"{Environment.NewLine}- Part 1: {part1}{Environment.NewLine}- Part 2: {part2}";
@@ -211,5 +220,25 @@ public static class Days
           + grid[x + 1, y + 1];
 
     return nextValue;
+  }
+
+  public static string Day4()
+  {
+    var input = File.ReadAllLines(Day4Input);
+
+    var p1 = 0;
+
+    foreach (var line in input)
+    {
+      var isValid = line
+        .Split(' ')
+        .GroupBy(x => x)
+        .ToDictionary(y => y, z => z.Count())
+        .All(x => x.Value == 1);
+
+      if (isValid) p1++;
+    }
+
+    return OutputResult(p1.ToString(), "");
   }
 }
