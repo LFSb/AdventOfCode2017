@@ -230,15 +230,41 @@ public static class Days
 
     foreach (var line in input)
     {
-      var isValid = line
+      if (line
         .Split(' ')
         .GroupBy(x => x)
         .ToDictionary(y => y, z => z.Count())
-        .All(x => x.Value == 1);
+        .All(x => x.Value == 1))
+      {
+        p1++;
+      }
 
-      if (isValid) p1++;
     }
 
-    return OutputResult(p1.ToString(), "");
+    var p2 = 0;
+
+    foreach (var line in input)
+    {
+      if (line
+        .Split(' ')
+        .GroupBy(x => x.Length)
+        .Where(x => x
+          .Count() > 1)
+          .SelectMany(x => x
+            .Select(y => y
+              .ToCharArray()
+              .OrderBy(z => z
+            )
+          )
+        )
+        .GroupBy(y => string.Join(",", y))
+        .All(y => y.Count() == 1)
+      )
+      {
+        p2++;
+      }
+    }
+
+    return OutputResult(p1.ToString(), p2.ToString());
   }
 }
