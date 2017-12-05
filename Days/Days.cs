@@ -17,6 +17,8 @@ public static class Days
 
   private const string Day4Input = "Days/Input/Day4.txt";
 
+  private const string Day5Input = "Days/Input/Day5.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -250,5 +252,60 @@ public static class Days
     );
 
     return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  public static string Day5()
+  {
+    var input = File.ReadAllLines(Day5Input).Select(x => int.Parse(x)).ToArray();
+
+    var outOfBounds = false;
+
+    var currentIndex = 0;
+
+    var p1 = 0;
+
+    while (!outOfBounds)
+    {
+      outOfBounds = Jump(input, ref currentIndex);
+
+      p1++;
+    }
+
+    currentIndex = 0;
+
+    var p2 = 0;
+
+    outOfBounds = false;
+
+    input = File.ReadAllLines(Day5Input).Select(x => int.Parse(x)).ToArray();
+
+    while (!outOfBounds)
+    {
+      outOfBounds = Jump(input, ref currentIndex, true);
+
+      p2++;
+    }
+
+    return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  private static bool Jump(int[] input, ref int currentIndex, bool p2 = false)
+  {
+    var jump = input[currentIndex];
+
+    var nextIndex = currentIndex + jump;
+
+    if (p2 && jump >= 3)
+    {
+      input[currentIndex]--;
+    }
+    else
+    {
+      input[currentIndex]++;
+    }
+
+    currentIndex = nextIndex;
+
+    return currentIndex < 0 || currentIndex >= input.Length;
   }
 }
