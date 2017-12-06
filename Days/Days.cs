@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class Days
 {
@@ -307,5 +308,42 @@ public static class Days
     currentIndex = nextIndex;
 
     return currentIndex < 0 || currentIndex >= input.Length;
+  }
+
+  public static string Day6()
+  {
+    var banks = new int[] {2,8,8,5,4,2,3,1,5,5,1,2,15,13,5,14};
+
+    var savedStates = new Dictionary<string, int>();
+
+    string currentState = string.Join("", banks);
+
+    int cycles = 0;
+
+    while (!savedStates.ContainsKey(currentState))
+    {
+      savedStates.Add(currentState, cycles); //Add the current state for checking later.
+
+      var startingIndex = Array.IndexOf(banks, banks.Max()); //When a tie happens between max values, IndexOf always defaults to the first one.
+
+      var savedValue = banks.Max();
+
+      banks[startingIndex] = 0;                                             
+      
+      //Now start cycling.
+      for (var i = savedValue; i > 0; i--)
+      {
+        startingIndex = CalculateNextIndex(startingIndex, 1, banks.Count());
+        banks[startingIndex]++;
+        // System.Console.WriteLine(string.Join("", banks));
+      }
+
+      cycles++;
+      currentState = string.Join("", banks);
+    }
+
+    var p2 = cycles - savedStates[currentState];
+
+    return OutputResult(cycles.ToString(), p2.ToString());
   }
 }
