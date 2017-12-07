@@ -20,6 +20,10 @@ public static class Days
 
   private const string Day5Input = "Days/Input/Day5.txt";
 
+  private const string Day7TestInput = "Days/Input/Day7Test.txt";
+
+  private const string Day7Input = "Days/Input/Day7.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -312,7 +316,7 @@ public static class Days
 
   public static string Day6()
   {
-    var banks = new int[] {2,8,8,5,4,2,3,1,5,5,1,2,15,13,5,14};
+    var banks = new int[] { 2, 8, 8, 5, 4, 2, 3, 1, 5, 5, 1, 2, 15, 13, 5, 14 };
 
     var savedStates = new Dictionary<string, int>();
 
@@ -328,14 +332,13 @@ public static class Days
 
       var savedValue = banks.Max();
 
-      banks[startingIndex] = 0;                                             
-      
+      banks[startingIndex] = 0;
+
       //Now start cycling.
       for (var i = savedValue; i > 0; i--)
       {
         startingIndex = CalculateNextIndex(startingIndex, 1, banks.Count());
         banks[startingIndex]++;
-        // System.Console.WriteLine(string.Join("", banks));
       }
 
       cycles++;
@@ -345,5 +348,96 @@ public static class Days
     var p2 = cycles - savedStates[currentState];
 
     return OutputResult(cycles.ToString(), p2.ToString());
+  }
+
+  public static string Day7()
+  {
+    var lines = File.ReadAllLines(Day7Input);
+
+    var nodes = new List<Node>();
+
+    foreach (var line in lines)
+    {
+      nodes.Add(new Node(line));
+    }
+
+    foreach (var node in nodes.Where(n => n.ChildrenKeys != null && n.ChildrenKeys.Any()))
+    {
+      node.Children = nodes.Where(x => node.ChildrenKeys.Contains(x.Name)).ToList();
+
+      foreach (var child in node.Children)
+      {
+        child.Parent = node;
+      }
+    }
+
+    var bottom = nodes.First(x => x.Children.Any() && x.Parent == null);
+
+    var towers = new List<Tuple<string, int>>();
+
+    foreach (var child in bottom.Children)
+    {
+      towers.Add(new Tuple<string, int>(child.Name, child.TotalWeight));
+    }
+
+    var exceptionNode = towers.GroupBy(x => x.Item2).First(x => x.Count() == 1).First();
+
+    var difference = Math.Abs(towers.First(x => x.Item1 != exceptionNode.Item1).Item2 - exceptionNode.Item2);
+
+    var current = nodes.First(x => x.Name == exceptionNode.Item1);
+
+    var p2 = 0;
+
+    while (true)
+    {
+      var exception = current.Children.GroupBy(x => x.TotalWeight).FirstOrDefault(x => x.Count() == 1);
+
+      if (exception != null)
+      {
+        current = exception.First();
+      }
+      else
+      {
+        p2 = current.Weight - difference;
+        break;
+      }
+    }
+
+    return OutputResult(bottom.Name, p2.ToString());
+  }
+
+  public class Node
+  {
+    public Node(string input)
+    {
+      var split = input.Split(' ');
+      this.Name = split[0];
+      this.Weight = int.Parse(split[1].Trim(new[] { '(', ')' }));
+
+      if (split.Length > 2)
+      {
+        ChildrenKeys = split.Skip(3).Select(x => x.Trim(',')).ToList();
+      }
+
+      Children = new List<Node>();
+    }
+
+    public Node Parent { get; set; }
+
+    public string Name { get; set; }
+
+    public int Weight { get; set; }
+
+    public int TotalWeight
+    {
+      get
+      {
+        return Weight + Children.Sum(child => child.TotalWeight);
+      }
+    }
+
+    public List<string> ChildrenKeys { get; set; }
+
+    public List<Node> Children { get; set; }
   }
 }
