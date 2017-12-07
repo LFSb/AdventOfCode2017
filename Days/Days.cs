@@ -352,14 +352,7 @@ public static class Days
 
   public static string Day7()
   {
-    var lines = File.ReadAllLines(Day7Input);
-
-    var nodes = new List<Node>();
-
-    foreach (var line in lines)
-    {
-      nodes.Add(new Node(line));
-    }
+    var nodes = File.ReadAllLines(Day7Input).Select(line => new Node(line)).ToList();
 
     foreach (var node in nodes.Where(n => n.ChildrenKeys != null && n.ChildrenKeys.Any()))
     {
@@ -371,11 +364,11 @@ public static class Days
       }
     }
 
-    var bottom = nodes.First(x => x.Children.Any() && x.Parent == null);
+    var p1 = nodes.First(x => x.Children.Any() && x.Parent == null);
 
     var towers = new List<Tuple<string, int>>();
 
-    foreach (var child in bottom.Children)
+    foreach (var child in p1.Children)
     {
       towers.Add(new Tuple<string, int>(child.Name, child.TotalWeight));
     }
@@ -403,7 +396,7 @@ public static class Days
       }
     }
 
-    return OutputResult(bottom.Name, p2.ToString());
+    return OutputResult(p1.Name, p2.ToString());
   }
 
   public class Node
