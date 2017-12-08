@@ -24,6 +24,8 @@ public static partial class Days
 
   private const string Day7Input = "Days/Input/Day7.txt";
 
+  private const string Day8Input = "Days/Input/Day8.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -397,5 +399,107 @@ public static partial class Days
     }
 
     return OutputResult(p1.Name, p2.ToString());
+  }
+
+  public static string Day8()
+  {
+    var input = File.ReadAllLines(Day8Input);
+
+    var registers = input.Select(x => x.Split(' ')[0]).Distinct().ToDictionary(x => x, y => 0);
+
+    var highestValue = 0;
+
+    foreach (var line in input)
+    {
+      var split = line.Split(' ');
+
+      var targetRegister = split[0];
+
+      var operation = split[1];
+
+      var additive = int.Parse(split[2]);
+
+      var checkRegister = split[4];
+
+      var op = split[5];
+
+      var checkValue = split[6];
+
+      switch (op)
+      {
+        case ">":
+          {
+            if (registers[checkRegister] > int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+        case "<":
+          {
+            if (registers[checkRegister] < int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+        case ">=":
+          {
+            if (registers[checkRegister] >= int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+        case "==":
+          {
+            if (registers[checkRegister] == int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+        case "<=":
+          {
+            if (registers[checkRegister] <= int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+        case "!=":
+          {
+            if (registers[checkRegister] != int.Parse(checkValue))
+            {
+              ModifyRegister(ref registers, targetRegister, operation, additive);
+            }
+          }
+          break;
+      }
+
+      if(registers[targetRegister] > highestValue)
+      {
+        highestValue = registers[targetRegister];
+      }
+    }
+
+    return OutputResult(registers.Max(x => x.Value).ToString(), highestValue.ToString());
+  }
+
+  private static void ModifyRegister(ref Dictionary<string, int> registers, string targetRegister, string operation, int additive)
+  {
+    switch (operation)
+    {
+      case "inc":
+        {
+          registers[targetRegister] += additive;
+        }
+        break;
+      case "dec":
+        {
+          registers[targetRegister] -= additive;
+        }
+        break;
+    }
   }
 }
