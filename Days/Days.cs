@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 
 public static partial class Days
 {
@@ -27,6 +28,10 @@ public static partial class Days
   private const string Day8Input = "Days/Input/Day8.txt";
 
   private const string Day9Input = "Days/Input/Day9.txt";
+
+  private static byte[] Day10Input = new byte[] { 97, 167, 54, 178, 2, 11, 209, 174, 119, 248, 254, 0, 255, 1, 64, 190 };
+
+  private const string Day10Padding = "17,31,73,47,23";
 
   private static string[] Day4TestInput = new string[]
   {
@@ -67,12 +72,7 @@ public static partial class Days
 
   private static int CalculateNextIndex(int currentIndex, int offSet, int maxLength)
   {
-    if (currentIndex + offSet < maxLength)
-    {
-      return currentIndex + offSet;
-    }
-
-    return currentIndex + offSet - maxLength;
+    return (currentIndex + offSet) % maxLength;
   }
 
   public static string Day2()
@@ -530,7 +530,7 @@ public static partial class Days
       {
         case '{':
           {
-            if(groupStarted.FirstOrDefault())
+            if (groupStarted.FirstOrDefault())
             {
               score++;
             }
@@ -544,7 +544,7 @@ public static partial class Days
             if (groupStarted.FirstOrDefault())
             {
               groups += score;
-              score--;              
+              score--;
               groupStarted.Dequeue();
             }
           }
@@ -583,38 +583,133 @@ public static partial class Days
         }
       }
 
-      // Array.Clear(input, start, (end - start) + 1); // + 1 to also remove the end of the garbage.
-
       var ignoreNext = false;
 
       input[start] = '0';
       input[end] = '0';
 
-      for(var i = start + 1; i < end; i++)
+      for (var i = start + 1; i < end; i++)
       {
-        switch(input[i])
+        switch (input[i])
         {
           case '!':
-          {
-            input[i] = '0';
-            ignoreNext = true;
-          } break;
-          default:
-          {
-            if(ignoreNext)
             {
               input[i] = '0';
-              ignoreNext = false;
+              ignoreNext = true;
             }
-            else
+            break;
+          default:
             {
-              input[i] = '\0';
+              if (ignoreNext)
+              {
+                input[i] = '0';
+                ignoreNext = false;
+              }
+              else
+              {
+                input[i] = '\0';
+              }
             }
-          } break;
+            break;
         }
       }
     }
 
     return input;
+  }
+
+  public static string Day10()
+  {
+    var inputList = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+
+    var input = Day10Input;
+
+    var p2input = System.Text.Encoding.ASCII.GetBytes(string.Join(",", input)).ToList();
+
+    var inputPosition = 0;
+    var skipSize = 0;
+
+    KnotHash(inputList, input, ref inputPosition, ref skipSize);
+
+    var p1 = (inputList[0] * inputList[1]).ToString();
+
+    //First, we're going to want to reset everthing that we're reusing here.
+    inputList = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+    inputPosition = 0;
+    skipSize = 0;
+
+    var p2Numeric = p2input.Select(x => (byte)x).ToList();
+    p2Numeric.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
+
+    System.Console.WriteLine(string.Join(",", p2Numeric));
+
+    for (var round = 0; round < 64; round++)
+    {
+      KnotHash(inputList, p2Numeric.ToArray(), ref inputPosition, ref skipSize);
+    }
+
+    var denseHash = CalculateDenseHash(inputList);
+
+    var p2 = string.Empty;
+
+    foreach (var value in denseHash)
+    {
+      p2 += value.ToString("x").PadLeft(2, '0');
+    }
+
+    return OutputResult(p1, p2);
+  }
+
+  public static byte[] CalculateDenseHash(byte[] sparseHash)
+  {
+    int hashSize = 16;
+
+    byte[] denseHash = new byte[hashSize];
+
+    for (var x = 0; x < sparseHash.Length / hashSize; x++)
+    {
+      var block = sparseHash.Skip(x * hashSize).Take(hashSize).ToArray();
+      byte blockValue = block[0];
+
+      for (var y = 1; y < hashSize; y++)
+      {
+        blockValue ^= block[y];
+      }
+
+      denseHash[x] = blockValue;
+    }
+
+    return denseHash;
+  }
+
+  private static void KnotHash(byte[] inputList, byte[] lengths, ref int inputPosition, ref int skipSize)
+  {
+    for (var i = 0; i < lengths.Length; i++)
+    {
+      var length = lengths[i];
+
+      var toReverse = new byte[length];
+
+      var start = inputPosition;
+
+      for (var j = 0; j < length; j++)
+      {
+        toReverse[j] = inputList[start];
+        start = CalculateNextIndex(start, 1, inputList.Length);
+      }
+
+      start = inputPosition;
+
+      toReverse = toReverse.Reverse().ToArray();
+
+      for (var j = 0; j < length; j++)
+      {
+        inputList[start] = toReverse[j];
+        start = CalculateNextIndex(start, 1, inputList.Length);
+      }
+
+      inputPosition = CalculateNextIndex(inputPosition, length + skipSize, inputList.Length);
+      skipSize++;
+    }
   }
 }
