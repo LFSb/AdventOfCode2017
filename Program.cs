@@ -18,6 +18,8 @@ public class Program
     
     // Console.WriteLine("Day 7:" + Days.Day7());
 
-    Console.WriteLine("Day 8:" + Days.Day8());
+    // Console.WriteLine("Day 8:" + Days.Day8());
+
+    Console.WriteLine("Day 9:" + Days.Day9());
   }
 }

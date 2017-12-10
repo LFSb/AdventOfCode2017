@@ -26,6 +26,8 @@ public static partial class Days
 
   private const string Day8Input = "Days/Input/Day8.txt";
 
+  private const string Day9Input = "Days/Input/Day9.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -477,7 +479,7 @@ public static partial class Days
           break;
       }
 
-      if(registers[targetRegister] > highestValue)
+      if (registers[targetRegister] > highestValue)
       {
         highestValue = registers[targetRegister];
       }
@@ -501,5 +503,118 @@ public static partial class Days
         }
         break;
     }
+  }
+
+  public static string Day9()
+  {
+    var input = File.ReadAllText(Day9Input).ToCharArray();
+
+    var rinsed = Rinse(input);
+
+    var p1 = Score(rinsed);
+
+    return OutputResult(p1.ToString(), rinsed.Count(x => x == '\0').ToString());
+  }
+
+  private static int Score(char[] input)
+  {
+    var groups = 0;
+
+    var groupStarted = new Queue<Boolean>();
+
+    var score = 1;
+
+    for (var i = 0; i < input.Length; i++)
+    {
+      switch (input[i])
+      {
+        case '{':
+          {
+            if(groupStarted.FirstOrDefault())
+            {
+              score++;
+            }
+
+            groupStarted.Enqueue(true);
+          }
+          break;
+
+        case '}':
+          {
+            if (groupStarted.FirstOrDefault())
+            {
+              groups += score;
+              score--;              
+              groupStarted.Dequeue();
+            }
+          }
+          break;
+      }
+    }
+
+    return groups;
+  }
+
+  private static char[] Rinse(char[] input)
+  {
+    //In here, it's garbage day.
+
+    while (input.Contains('<'))
+    {
+      var start = Array.IndexOf(input, '<');
+      var end = 0;
+
+      for (var i = start + 1; i < input.Length; i++)
+      {
+        switch (input[i])
+        {
+          case '!':
+            {
+              input[i + 1] = '\0';
+            }
+            break;
+          case '>':
+            {
+
+              end = i;
+              i = input.Length;
+            }
+            break;
+        }
+      }
+
+      // Array.Clear(input, start, (end - start) + 1); // + 1 to also remove the end of the garbage.
+
+      var ignoreNext = false;
+
+      input[start] = '0';
+      input[end] = '0';
+
+      for(var i = start + 1; i < end; i++)
+      {
+        switch(input[i])
+        {
+          case '!':
+          {
+            input[i] = '0';
+            ignoreNext = true;
+          } break;
+          default:
+          {
+            if(ignoreNext)
+            {
+              input[i] = '0';
+              ignoreNext = false;
+            }
+            else
+            {
+              input[i] = '\0';
+            }
+          } break;
+        }
+      }
+    }
+
+    return input;
   }
 }
