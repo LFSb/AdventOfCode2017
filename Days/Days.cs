@@ -633,15 +633,13 @@ public static partial class Days
 
     var p1 = (inputList[0] * inputList[1]).ToString();
 
-    //First, we're going to want to reset everthing that we're reusing here.
+    //For part 2: we're going to want to reset everthing that we're reusing here.
     inputList = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
     inputPosition = 0;
     skipSize = 0;
 
     var p2Numeric = p2input.Select(x => (byte)x).ToList();
     p2Numeric.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
-
-    System.Console.WriteLine(string.Join(",", p2Numeric));
 
     for (var round = 0; round < 64; round++)
     {
