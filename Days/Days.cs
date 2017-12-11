@@ -33,6 +33,8 @@ public static partial class Days
 
   private const string Day10Padding = "17,31,73,47,23";
 
+  private const string Day11Input = "Days/Input/Day11.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -711,5 +713,68 @@ public static partial class Days
       inputPosition = CalculateNextIndex(inputPosition, length + skipSize, inputList.Length);
       skipSize++;
     }
+  }
+
+  public static string Day11()
+  {
+    var input = File.ReadAllText(Day11Input).Split(',');
+
+    int x = 0, y = 0, z = 0;
+    
+    var maxDistance = 0;
+
+    foreach (var direction in input)
+    {
+      switch (direction)
+      {
+        
+        case "n":
+          {
+            y++;
+            z--;
+          }
+          break;
+        case "s":
+          {
+            y--;
+            z++;
+          }
+          break;
+        case "ne":
+          {
+            x++;
+            z--;
+          }
+          break;
+          case "nw":
+          {
+            x--;
+            y++;
+          }
+          break;
+               
+        case "se":
+          {
+            x++;
+            y--;
+          }
+          break;
+          case "sw":
+          {
+            x--;
+            z++;
+          }
+          break;
+      }
+
+      var currentDistance = (Math.Abs(x) + Math.Abs(y) + Math.Abs(z)) / 2;
+
+      if(currentDistance > maxDistance)
+      {
+        maxDistance = currentDistance;
+      }
+    }
+
+    return OutputResult(((Math.Abs(x) + Math.Abs(y) + Math.Abs(z)) / 2).ToString(), maxDistance.ToString());
   }
 }
