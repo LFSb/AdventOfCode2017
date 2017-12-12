@@ -24,6 +24,8 @@ public class Program
 
     // Console.WriteLine("Day 10:" + Days.Day10());
 
-    System.Console.WriteLine("Day 11:" + Days.Day11());
+    // System.Console.WriteLine("Day 11:" + Days.Day11());
+
+    System.Console.WriteLine("Day 12:" + Days.Day12());
   }
 }

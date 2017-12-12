@@ -35,6 +35,16 @@ public static partial class Days
 
   private const string Day11Input = "Days/Input/Day11.txt";
 
+  private static string[] Day12TestInput = new[]{"0 <-> 2",
+"1 <-> 1",
+"2 <-> 0, 3, 4",
+"3 <-> 2, 4",
+"4 <-> 2, 3, 6",
+"5 <-> 6",
+"6 <-> 4, 5"};
+
+  private const string Day12Input = "Days/Input/Day12.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -774,5 +784,98 @@ public static partial class Days
     }
 
     return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  public static string Day12()
+  {
+    var pipes = new List<Pipe>();
+
+    foreach (var line in File.ReadAllLines(Day12Input))
+    {
+      var pipe = new Pipe(line);
+
+      pipes.Add(pipe);
+    }
+
+    //Direct connections are already in place, we only want the indirect connections.
+
+    var zero = pipes.First(x => x.ID == 0);
+
+    foreach (var pipe in pipes)
+    {
+      pipe.ConnectPipes(pipes);
+    }
+
+    var p1 = zero.ReturnConnections().Count.ToString();
+
+    var p2 = 0;
+
+    while(pipes.Any())
+    {
+      var group = pipes.First().ReturnConnections();
+      pipes.RemoveAll(x => group.Contains(x));
+      p2++;
+    }
+
+    return OutputResult(p1, p2.ToString());
+  }
+
+  private class Pipe
+  {
+    public Pipe(string input)
+    {
+      var split = input.Split(' ');
+
+      ID = int.Parse(split[0]);
+
+      Connected = split.Skip(2).Select(x => int.Parse(x.Trim(','))).ToList();
+
+      ConnectedPipes = new List<Pipe>();
+    }
+
+    public int ID { get; set; }
+
+    public List<int> Connected;
+
+    public List<Pipe> ConnectedPipes;
+
+    internal void ConnectPipes(List<Pipe> pipes)
+    {
+      for (var i = 0; i < Connected.Count; i++)
+      {
+        var pipe = pipes.First(x => x.ID == Connected[i]);
+
+        if (!ConnectedPipes.Contains(pipe))
+        {
+          ConnectedPipes.Add(pipe);
+        }
+
+        if(!pipe.ConnectedPipes.Contains(this))
+        {
+          pipe.ConnectedPipes.Add(this);
+        }
+      }
+    }
+
+    //In here, recursively map all the pipes that can be mapped to the current pipe.
+    internal List<Pipe> ReturnConnections()
+    {
+      var con = new List<Pipe>();
+      MapConnections(con);
+      return con;
+    }
+
+    internal void MapConnections(List<Pipe> pipes)
+    {
+      pipes.Add(this);
+
+      foreach(var connection in ConnectedPipes)
+      {
+        if(!pipes.Contains(connection))
+        {
+          connection.MapConnections(pipes);
+        }
+      }
+    }
   }
 }
