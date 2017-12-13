@@ -45,6 +45,15 @@ public static partial class Days
 
   private const string Day12Input = "Days/Input/Day12.txt";
 
+  private static string[] Day13TestInput = new[]{
+"0: 3",
+"1: 2",
+"4: 4",
+"6: 4"
+};
+
+  private const string Day13Input = "Days/Input/Day13.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -808,7 +817,7 @@ public static partial class Days
 
     var p2 = 0;
 
-    while(pipes.Any())
+    while (pipes.Any())
     {
       var group = pipes.First().ReturnConnections();
       pipes.RemoveAll(x => group.Contains(x));
@@ -848,7 +857,7 @@ public static partial class Days
           ConnectedPipes.Add(pipe);
         }
 
-        if(!pipe.ConnectedPipes.Contains(this))
+        if (!pipe.ConnectedPipes.Contains(this))
         {
           pipe.ConnectedPipes.Add(this);
         }
@@ -867,12 +876,116 @@ public static partial class Days
     {
       pipes.Add(this);
 
-      foreach(var connection in ConnectedPipes)
+      foreach (var connection in ConnectedPipes)
       {
-        if(!pipes.Contains(connection))
+        if (!pipes.Contains(connection))
         {
           connection.MapConnections(pipes);
         }
+      }
+    }
+  }
+
+  public static string Day13()
+  {
+    var fw = new FireWall(File.ReadAllLines(Day13Input));
+
+    //fw.PrintFireWall();
+
+    var severity = 0;
+
+    for (var picoSecond = 0; picoSecond < fw.Layers.Length; picoSecond++)
+    {
+      if (fw.Layers[picoSecond].Length == 0)
+      {
+        continue;
+      }
+
+
+      if (picoSecond % ((fw.Layers[picoSecond].Length - 1) * 2) == 0)
+      {
+        severity += (fw.Layers[picoSecond].Length * picoSecond);
+      }
+    }
+
+    var delay = 0;
+
+    while (true)
+    {
+      var x = false;
+
+      for (var picoSecond = 0; picoSecond < fw.Layers.Length; picoSecond++)
+      {
+        if (fw.Layers[picoSecond].Length == 0)
+        {
+          continue;
+        }
+
+        if ((picoSecond + delay) % ((fw.Layers[picoSecond].Length - 1) * 2) == 0)
+        {
+          x = true;
+          // We're caught, so we need to try again with a bigger delay.
+          break;
+        }
+      }
+
+      if (!x)
+      {
+        System.Console.WriteLine(delay);
+        break;
+      }
+      else
+      {
+        delay++;
+      }
+    }
+
+
+    return OutputResult(severity.ToString(), delay.ToString());
+  }
+
+  public class FireWall
+  {
+    public FireWall(string[] input)
+    {
+      var grouped = input.GroupBy(x => int.Parse(x.Split(' ')[0].Trim(':'))).ToDictionary(x => x.Key, y => int.Parse(y.First().Split(' ')[1]));
+
+      var depth = grouped.Last().Key;
+      var layers = new List<int[]>();
+
+      for (var i = 0; i <= depth; i++)
+      {
+        if (grouped.ContainsKey(i))
+        {
+          layers.Add(new int[grouped[i]]);
+        }
+        else
+        {
+          layers.Add(new int[0]);
+        }
+      }
+
+      Layers = layers.ToArray();
+    }
+
+    public int[][] Layers { get; set; }
+
+    public int ScanDepth { get; set; }
+
+    public void PrintFireWall()
+    {
+      var header = string.Empty;
+
+      for (var i = 0; i < Layers.Length; i++)
+      {
+        header += $"{i}".PadLeft(2, ' ').PadRight(3, ' ');
+      }
+
+      System.Console.WriteLine(header);
+
+      for (var i = 0; i < Layers.Max(x => x.Length); i++)
+      {
+        System.Console.WriteLine(string.Join("", Layers.Select(x => x.Length > i).Select(x => x ? $"[ ]" : "   ")));
       }
     }
   }

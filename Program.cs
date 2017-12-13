@@ -2,8 +2,7 @@ using System;
 
 public class Program
 {
-  static void Main(string[] args)
-  {
+  static void Main(string[] args) =>
     // Console.WriteLine("Day 1:" + Days.Day1());
 
     // Console.WriteLine("Day 2:" + Days.Day2());
@@ -15,7 +14,7 @@ public class Program
     // Console.WriteLine("Day 5:" + Days.Day5());
 
     // Console.WriteLine("Day 6:" + Days.Day6());
-    
+
     // Console.WriteLine("Day 7:" + Days.Day7());
 
     // Console.WriteLine("Day 8:" + Days.Day8());
@@ -26,6 +25,7 @@ public class Program
 
     // System.Console.WriteLine("Day 11:" + Days.Day11());
 
-    System.Console.WriteLine("Day 12:" + Days.Day12());
-  }
+    // System.Console.WriteLine("Day 12:" + Days.Day12());
+
+    System.Console.WriteLine("Day 13:" + Days.Day13());
 }
