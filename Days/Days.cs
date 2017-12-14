@@ -990,42 +990,45 @@ public static partial class Days
     }
   }
 
+  private static string CalculateDenseHash(string input)
+  {
+    var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+
+    var inputPosition = 0;
+
+    var skipSize = 0;
+
+    var key = System.Text.Encoding.ASCII.GetBytes(input).ToList();
+
+    key.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
+
+    for (var round = 0; round < 64; round++)
+    {
+      KnotHash(result, key.ToArray(), ref inputPosition, ref skipSize);
+    }
+
+    return string.Join("", CalculateDenseHash(result).Select(x => x.ToString("x2")));
+  }
+
   public static string Day14()
   {
     var grid = new bool[128, 128];
-    
+
     var input = "ljoxqyyw";
 
     var rows = new List<string>();
 
     for (var line = 0; line < 128; line++)
     {
-      var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+      var dense = CalculateDenseHash($"{input}-{line}");
 
-      var inputPosition = 0;
-
-      var skipSize = 0;
-
-      var key = System.Text.Encoding.ASCII.GetBytes($"{input}-{line}").ToList();
-
-      key.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
-
-      for (var round = 0; round < 64; round++)
-      {
-        KnotHash(result, key.ToArray(), ref inputPosition, ref skipSize);
-      }
-
-      var denseHash = CalculateDenseHash(result);
-
-      var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
-
-      var binary = string.Join("", hex.Select(y => Convert.ToString(
+      var binary = string.Join("", dense.Select(y => Convert.ToString(
           Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
       );
 
-      for(var column = 0; column < binary.Length; column++)
+      for (var column = 0; column < binary.Length; column++)
       {
-        grid[line,column] = binary[column] == '1';
+        grid[line, column] = binary[column] == '1';
       }
 
       var row = string.Join("", binary.Select(x => x == '1' ? '#' : '.'));
@@ -1034,12 +1037,12 @@ public static partial class Days
 
     var p1 = 0;
 
-    foreach(var bla in grid)
+    foreach (var square in grid)
     {
-      if(bla)
+      if (square)
       {
         p1++;
-      }     
+      }
     }
 
     return OutputResult(p1.ToString(), "");
