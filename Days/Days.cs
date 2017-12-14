@@ -61,6 +61,8 @@ public static partial class Days
     "aa bb cc dd aaa"
   };
 
+  private const string Day14Input = "ljoxqyyw";
+
   private static string OutputResult(string part1, string part2)
   {
     return $"{Environment.NewLine}- Part 1: {part1}{Environment.NewLine}- Part 2: {part2}";
@@ -986,5 +988,60 @@ public static partial class Days
         System.Console.WriteLine(string.Join("", Layers.Select(x => x.Length > i).Select(x => x ? $"[ ]" : "   ")));
       }
     }
+  }
+
+  public static string Day14()
+  {
+    var grid = new bool[128, 128];
+    
+    var input = "ljoxqyyw";
+
+    var rows = new List<string>();
+
+    for (var line = 0; line < 128; line++)
+    {
+      var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+
+      var inputPosition = 0;
+
+      var skipSize = 0;
+
+      var key = System.Text.Encoding.ASCII.GetBytes($"{input}-{line}").ToList();
+
+      key.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
+
+      for (var round = 0; round < 64; round++)
+      {
+        KnotHash(result, key.ToArray(), ref inputPosition, ref skipSize);
+      }
+
+      var denseHash = CalculateDenseHash(result);
+
+      var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
+
+      var binary = string.Join("", hex.Select(y => Convert.ToString(
+          Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
+      );
+
+      for(var column = 0; column < binary.Length; column++)
+      {
+        grid[line,column] = binary[column] == '1';
+      }
+
+      var row = string.Join("", binary.Select(x => x == '1' ? '#' : '.'));
+      rows.Add(row);
+    }
+
+    var p1 = 0;
+
+    foreach(var bla in grid)
+    {
+      if(bla)
+      {
+        p1++;
+      }     
+    }
+
+    return OutputResult(p1.ToString(), "");
   }
 }
