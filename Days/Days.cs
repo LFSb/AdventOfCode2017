@@ -61,6 +61,8 @@ public static partial class Days
     "aa bb cc dd aaa"
   };
 
+  private const string Day14Input = "ljoxqyyw";
+
   private static string OutputResult(string part1, string part2)
   {
     return $"{Environment.NewLine}- Part 1: {part1}{Environment.NewLine}- Part 2: {part2}";
@@ -988,5 +990,38 @@ public static partial class Days
         System.Console.WriteLine(string.Join("", Layers.Select(x => x.Length > i).Select(x => x ? $"[ ]" : "   ")));
       }
     }
+  }
+
+  public static string Day14()
+  {
+    var grid = new bool[128, 128];
+
+    var inputPosition = 0;
+    var skipSize = 0;
+
+    var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
+
+    var key = System.Text.Encoding.ASCII.GetBytes("flqrgnkx-0");
+
+    for(var round = 0; round < 64; round++)
+    {
+      KnotHash(result, key, ref inputPosition, ref skipSize);
+    }   
+
+    var denseHash = CalculateDenseHash(result);
+
+    var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
+
+    System.Console.WriteLine(hex);
+
+    var bla = string.Join("", hex.Select(y => Convert.ToString(
+        Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
+    );
+
+    var row = string.Join("", bla.Select(x => x == '1' ? '#' : '.'));
+
+    System.Console.WriteLine(row.Length);
+
+    return OutputResult(row, "");
   }
 }
