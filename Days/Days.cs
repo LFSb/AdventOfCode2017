@@ -1021,16 +1021,16 @@ public static partial class Days
 
       var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
 
-      var bla = string.Join("", hex.Select(y => Convert.ToString(
+      var binary = string.Join("", hex.Select(y => Convert.ToString(
           Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
       );
 
-      for(var column = 0; column < bla.Length; column++)
+      for(var column = 0; column < binary.Length; column++)
       {
-        grid[line,column] = bla[column] == '1';
+        grid[line,column] = binary[column] == '1';
       }
 
-      var row = string.Join("", bla.Select(x => x == '1' ? '#' : '.'));
+      var row = string.Join("", binary.Select(x => x == '1' ? '#' : '.'));
       rows.Add(row);
     }
 
