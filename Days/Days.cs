@@ -892,7 +892,7 @@ public static partial class Days
 
     //fw.PrintFireWall();
 
-    var severity = 0;
+    var p1 = 0;
 
     for (var picoSecond = 0; picoSecond < fw.Layers.Length; picoSecond++)
     {
@@ -904,15 +904,15 @@ public static partial class Days
 
       if (picoSecond % ((fw.Layers[picoSecond].Length - 1) * 2) == 0)
       {
-        severity += (fw.Layers[picoSecond].Length * picoSecond);
+        p1 += (fw.Layers[picoSecond].Length * picoSecond);
       }
     }
 
-    var delay = 0;
+    var p2 = 0;
 
     while (true)
     {
-      var x = false;
+      var caught = false;
 
       for (var picoSecond = 0; picoSecond < fw.Layers.Length; picoSecond++)
       {
@@ -921,27 +921,25 @@ public static partial class Days
           continue;
         }
 
-        if ((picoSecond + delay) % ((fw.Layers[picoSecond].Length - 1) * 2) == 0)
+        if ((picoSecond + p2) % ((fw.Layers[picoSecond].Length - 1) * 2) == 0)
         {
-          x = true;
+          caught = true;
           // We're caught, so we need to try again with a bigger delay.
           break;
         }
       }
 
-      if (!x)
+      if (!caught)
       {
-        System.Console.WriteLine(delay);
         break;
       }
       else
       {
-        delay++;
+        p2++;
       }
     }
 
-
-    return OutputResult(severity.ToString(), delay.ToString());
+    return OutputResult(p1.ToString(), p2.ToString());
   }
 
   public class FireWall
