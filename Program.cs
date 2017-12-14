@@ -2,7 +2,8 @@ using System;
 
 public class Program
 {
-  static void Main(string[] args) =>
+  static void Main(string[] args)
+  {
     // Console.WriteLine("Day 1:" + Days.Day1());
 
     // Console.WriteLine("Day 2:" + Days.Day2());
@@ -30,4 +31,5 @@ public class Program
     // System.Console.WriteLine("Day 13:" + Days.Day13());
 
     System.Console.WriteLine("Day 14:" + Days.Day14());
+  }
 }

@@ -995,33 +995,55 @@ public static partial class Days
   public static string Day14()
   {
     var grid = new bool[128, 128];
+    
+    var input = "ljoxqyyw";
 
-    var inputPosition = 0;
-    var skipSize = 0;
+    var rows = new List<string>();
 
-    var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
-
-    var key = System.Text.Encoding.ASCII.GetBytes("flqrgnkx-0");
-
-    for(var round = 0; round < 64; round++)
+    for (var line = 0; line < 128; line++)
     {
-      KnotHash(result, key, ref inputPosition, ref skipSize);
-    }   
+      var result = Enumerable.Range(0, 256).Select(x => (byte)x).ToArray();
 
-    var denseHash = CalculateDenseHash(result);
+      var inputPosition = 0;
 
-    var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
+      var skipSize = 0;
 
-    System.Console.WriteLine(hex);
+      var key = System.Text.Encoding.ASCII.GetBytes($"{input}-{line}").ToList();
 
-    var bla = string.Join("", hex.Select(y => Convert.ToString(
-        Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
-    );
+      key.AddRange(Day10Padding.Split(',').Select(x => byte.Parse($"{x}")));
 
-    var row = string.Join("", bla.Select(x => x == '1' ? '#' : '.'));
+      for (var round = 0; round < 64; round++)
+      {
+        KnotHash(result, key.ToArray(), ref inputPosition, ref skipSize);
+      }
 
-    System.Console.WriteLine(row.Length);
+      var denseHash = CalculateDenseHash(result);
 
-    return OutputResult(row, "");
+      var hex = string.Join("", denseHash.Select(x => x.ToString("x2")));
+
+      var bla = string.Join("", hex.Select(y => Convert.ToString(
+          Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
+      );
+
+      for(var column = 0; column < bla.Length; column++)
+      {
+        grid[line,column] = bla[column] == '1';
+      }
+
+      var row = string.Join("", bla.Select(x => x == '1' ? '#' : '.'));
+      rows.Add(row);
+    }
+
+    var p1 = 0;
+
+    foreach(var bla in grid)
+    {
+      if(bla)
+      {
+        p1++;
+      }     
+    }
+
+    return OutputResult(p1.ToString(), "");
   }
 }
