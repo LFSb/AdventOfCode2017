@@ -1113,7 +1113,7 @@ public static partial class Days
       {
         visits.Add(new Tuple<int, int>(x, y - 1));
       }
-      
+
       position++; //Afterwards, go to the next position, and perform the same check.
     }
 
@@ -1125,13 +1125,13 @@ public static partial class Days
 
   public static string Day15()
   {
-    long genAValue = 65; //Test
+    // long genAValue = 65; //Test
 
-    // long genAValue = 516; //real
+    long genAValue = 516; //real
 
-    long genBValue = 8921; //Test
+    // long genBValue = 8921; //Test
 
-    // long genBValue = 190; //Test
+    long genBValue = 190; //real
 
     long genAFactor = 16807;
 
@@ -1139,24 +1139,64 @@ public static partial class Days
 
     long division = 2147483647;
 
-    var count = 0;
+    var pairCountp1 = 40000000;
 
-    for (var i = 0; i < 40000000; i++)
+    var p1 = 0;
+
+    for (var i = 0; i < pairCountp1; i++)
     {
       genAValue = ((genAValue * genAFactor) % division);
       genBValue = ((genBValue * genBFactor) % division);
 
-      // System.Console.WriteLine($"A: {genAValue} B: {genBValue}");
-
-      var bina = Convert.ToString(genAValue, 2).PadLeft(32, '0').Substring(15);
-      var binb = Convert.ToString(genBValue, 2).PadLeft(32, '0').Substring(15);
+      var bina = Convert.ToString(genAValue, 2).PadLeft(32, '0').Substring(16);
+      var binb = Convert.ToString(genBValue, 2).PadLeft(32, '0').Substring(16);
 
       if (bina == binb)
       {
-        count++;
+        p1++;
       }
     }
 
-    return OutputResult(count.ToString(), "");
+    var pairCountp2 = 5000000;
+
+    genAValue = 516;
+    genBValue = 190;
+
+    var aQueue = new Queue<long>();
+    var bQueue = new Queue<long>();
+
+    while(aQueue.Count != pairCountp2 || bQueue.Count != pairCountp2)
+    {
+      genAValue = ((genAValue * genAFactor) % division);
+      genBValue = ((genBValue * genBFactor) % division);
+
+      if (genAValue % 4 == 0 && aQueue.Count != pairCountp2)
+      {
+        aQueue.Enqueue(genAValue);
+      }
+
+      if (genBValue % 8 == 0 && bQueue.Count != pairCountp2)
+      {
+        bQueue.Enqueue(genBValue);
+      }
+    }
+
+    var p2 = 0;
+
+    while (pairCountp2 > 0)
+    {
+      var a = aQueue.Dequeue();
+
+      var b = bQueue.Dequeue();
+
+      if (Convert.ToString(a, 2).PadLeft(32, '0').Substring(16) == Convert.ToString(b, 2).PadLeft(32, '0').Substring(16))
+      {
+        p2++;
+      }
+
+      pairCountp2--;
+    }
+
+    return OutputResult(p1.ToString(), p2.ToString());
   }
 }
