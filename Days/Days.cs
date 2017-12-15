@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 public static partial class Days
 {
@@ -1125,14 +1126,10 @@ public static partial class Days
 
   public static string Day15()
   {
-    // long genAValue = 65; //Test
+    long genAValue = 516;
 
-    long genAValue = 516; //real
-
-    // long genBValue = 8921; //Test
-
-    long genBValue = 190; //real
-
+    long genBValue = 190;
+    
     long genAFactor = 16807;
 
     long genBFactor = 48271;
@@ -1142,6 +1139,10 @@ public static partial class Days
     var pairCountp1 = 40000000;
 
     var p1 = 0;
+
+    var sw = new Stopwatch();
+
+    sw.Start();
 
     for (var i = 0; i < pairCountp1; i++)
     {
@@ -1157,6 +1158,10 @@ public static partial class Days
       }
     }
 
+    sw.Stop();
+
+    System.Console.WriteLine($"p1: {sw.ElapsedMilliseconds}ms");
+
     var pairCountp2 = 5000000;
 
     genAValue = 516;
@@ -1164,6 +1169,9 @@ public static partial class Days
 
     var aQueue = new Queue<long>();
     var bQueue = new Queue<long>();
+
+    sw = new Stopwatch();
+    sw.Start();
 
     while(aQueue.Count != pairCountp2 || bQueue.Count != pairCountp2)
     {
@@ -1185,17 +1193,17 @@ public static partial class Days
 
     while (pairCountp2 > 0)
     {
-      var a = aQueue.Dequeue();
-
-      var b = bQueue.Dequeue();
-
-      if (Convert.ToString(a, 2).PadLeft(32, '0').Substring(16) == Convert.ToString(b, 2).PadLeft(32, '0').Substring(16))
+      if (Convert.ToString(aQueue.Dequeue(), 2).PadLeft(32, '0').Substring(16) == Convert.ToString(bQueue.Dequeue(), 2).PadLeft(32, '0').Substring(16))
       {
         p2++;
       }
 
       pairCountp2--;
     }
+
+    sw.Stop();
+
+    System.Console.WriteLine($"p2: {sw.ElapsedMilliseconds}ms");
 
     return OutputResult(p1.ToString(), p2.ToString());
   }
