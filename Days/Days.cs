@@ -1087,36 +1087,37 @@ public static partial class Days
 
   public static void VisitRegion(int x, int y, bool[,] grid, ref bool[,] coords)
   {
-    HashSet<Tuple<int, int>> visits = new HashSet<Tuple<int, int>>();
+    var visits = new List<Tuple<int, int>>();
 
-    visits.Add(new Tuple<int, int>(x, y));
+    visits.Add(new Tuple<int, int>(x, y)); //First, add the current position to the list of visits.
 
-    int c = 0;
+    int position = 0;
 
-    while (c < visits.Count)
+    while (position < visits.Count) //Then, from the current position, check what adjacent coords are true. If they are true, add them to the list of visits.
     {
-      x = visits.ElementAt(c).Item1; y = visits.ElementAt(c).Item2;
+      x = visits.ElementAt(position).Item1; y = visits.ElementAt(position).Item2;
 
-      if (x - 1 > -1 && grid[x - 1, y] && !coords[x - 1, y])
+      if (x - 1 > -1 && grid[x - 1, y] && !coords[x - 1, y]) //To the left
       {
         visits.Add(new Tuple<int, int>(x - 1, y));
       }
-      if (x + 1 < 128 && grid[x + 1, y] && !coords[x + 1, y])
+      if (x + 1 < 128 && grid[x + 1, y] && !coords[x + 1, y]) //To the right
       {
         visits.Add(new Tuple<int, int>(x + 1, y));
       }
-      if (y - 1 > -1 && grid[x, y - 1] && !coords[x, y - 1])
-      {
-        visits.Add(new Tuple<int, int>(x, y - 1));
-      }
-      if (y + 1 < 128 && grid[x, y + 1] && !coords[x, y + 1])
+      if (y + 1 < 128 && grid[x, y + 1] && !coords[x, y + 1]) //Up
       {
         visits.Add(new Tuple<int, int>(x, y + 1));
       }
-      c++;
+      if (y - 1 > -1 && grid[x, y - 1] && !coords[x, y - 1]) //Down
+      {
+        visits.Add(new Tuple<int, int>(x, y - 1));
+      }
+      
+      position++; //Afterwards, go to the next position, and perform the same check.
     }
 
-    foreach (var location in visits)
+    foreach (var location in visits) //Mark the visited locations.
     {
       coords[location.Item1, location.Item2] = true;
     }
