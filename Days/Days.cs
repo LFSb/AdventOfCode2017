@@ -1084,14 +1084,15 @@ public static partial class Days
 
     return OutputResult(p1.ToString(), regionCount.ToString());
   }
+
   public static void VisitRegion(int x, int y, bool[,] grid, ref bool[,] coords)
   {
     HashSet<Tuple<int, int>> visits = new HashSet<Tuple<int, int>>();
-    
-    visits.Add(new Tuple<int, int>(x, y)); 
-    
+
+    visits.Add(new Tuple<int, int>(x, y));
+
     int c = 0;
-    
+
     while (c < visits.Count)
     {
       x = visits.ElementAt(c).Item1; y = visits.ElementAt(c).Item2;
@@ -1119,5 +1120,42 @@ public static partial class Days
     {
       coords[location.Item1, location.Item2] = true;
     }
+  }
+
+  public static string Day15()
+  {
+    long genAValue = 65; //Test
+
+    // long genAValue = 516; //real
+
+    long genBValue = 8921; //Test
+
+    // long genBValue = 190; //Test
+
+    long genAFactor = 16807;
+
+    long genBFactor = 48271;
+
+    long division = 2147483647;
+
+    var count = 0;
+
+    for (var i = 0; i < 40000000; i++)
+    {
+      genAValue = ((genAValue * genAFactor) % division);
+      genBValue = ((genBValue * genBFactor) % division);
+
+      // System.Console.WriteLine($"A: {genAValue} B: {genBValue}");
+
+      var bina = Convert.ToString(genAValue, 2).PadLeft(32, '0').Substring(15);
+      var binb = Convert.ToString(genBValue, 2).PadLeft(32, '0').Substring(15);
+
+      if (bina == binb)
+      {
+        count++;
+      }
+    }
+
+    return OutputResult(count.ToString(), "");
   }
 }
