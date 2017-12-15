@@ -1012,13 +1012,15 @@ public static partial class Days
 
   public static string Day14()
   {
-    var grid = new bool[128, 128];
+    var gridSize = 128;
+
+    var grid = new bool[gridSize, gridSize];
 
     var input = "ljoxqyyw";
 
     var rows = new List<string>();
 
-    for (var line = 0; line < 128; line++)
+    for (var line = 0; line < gridSize; line++)
     {
       var dense = CalculateDenseHash($"{input}-{line}");
 
@@ -1045,6 +1047,77 @@ public static partial class Days
       }
     }
 
-    return OutputResult(p1.ToString(), "");
+
+    //p2
+
+    grid = new bool[gridSize, gridSize];
+
+    for (var line = 0; line < gridSize; line++)
+    {
+      var dense = CalculateDenseHash($"{input}-{line}");
+
+      var binary = string.Join("", dense.Select(y => Convert.ToString(
+          Convert.ToInt32($"{y}", 16), 2).PadLeft(4, '0'))
+      );
+
+      for (var column = 0; column < binary.Length; column++)
+      {
+        grid[line, column] = binary[column] == '1';
+      }
+    }
+
+    var visitedGrid = new bool[gridSize, gridSize];
+
+    var regionCount = 0;
+
+    for (var row = 0; row < gridSize; row++)
+    {
+      for (var col = 0; col < gridSize; col++)
+      {
+        if (grid[row, col] && !visitedGrid[row, col])
+        {
+          VisitRegion(row, col, grid, ref visitedGrid);
+          regionCount++;
+        }
+      }
+    }
+
+    return OutputResult(p1.ToString(), regionCount.ToString());
+  }
+  public static void VisitRegion(int x, int y, bool[,] grid, ref bool[,] coords)
+  {
+    HashSet<Tuple<int, int>> visits = new HashSet<Tuple<int, int>>();
+    
+    visits.Add(new Tuple<int, int>(x, y)); 
+    
+    int c = 0;
+    
+    while (c < visits.Count)
+    {
+      x = visits.ElementAt(c).Item1; y = visits.ElementAt(c).Item2;
+
+      if (x - 1 > -1 && grid[x - 1, y] && !coords[x - 1, y])
+      {
+        visits.Add(new Tuple<int, int>(x - 1, y));
+      }
+      if (x + 1 < 128 && grid[x + 1, y] && !coords[x + 1, y])
+      {
+        visits.Add(new Tuple<int, int>(x + 1, y));
+      }
+      if (y - 1 > -1 && grid[x, y - 1] && !coords[x, y - 1])
+      {
+        visits.Add(new Tuple<int, int>(x, y - 1));
+      }
+      if (y + 1 < 128 && grid[x, y + 1] && !coords[x, y + 1])
+      {
+        visits.Add(new Tuple<int, int>(x, y + 1));
+      }
+      c++;
+    }
+
+    foreach (var location in visits)
+    {
+      coords[location.Item1, location.Item2] = true;
+    }
   }
 }
