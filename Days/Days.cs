@@ -55,6 +55,8 @@ public static partial class Days
 
   private const string Day13Input = "Days/Input/Day13.txt";
 
+  private const string Day16Input = "Days/Input/Day16.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -1129,7 +1131,7 @@ public static partial class Days
     long genAValue = 516;
 
     long genBValue = 190;
-    
+
     long genAFactor = 16807;
 
     long genBFactor = 48271;
@@ -1173,7 +1175,7 @@ public static partial class Days
     sw = new Stopwatch();
     sw.Start();
 
-    while(aQueue.Count != pairCountp2 || bQueue.Count != pairCountp2)
+    while (aQueue.Count != pairCountp2 || bQueue.Count != pairCountp2)
     {
       genAValue = ((genAValue * genAFactor) % division);
       genBValue = ((genBValue * genBFactor) % division);
@@ -1206,5 +1208,94 @@ public static partial class Days
     System.Console.WriteLine($"p2: {sw.ElapsedMilliseconds}ms");
 
     return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  public static string Day16()
+  {
+    var constant = "abcdefghijklmnop";
+
+    var chars = "abcdefghijklmnop".ToCharArray();
+
+    var dances = File.ReadAllText(Day16Input).Split(',').ToArray();
+
+    var shortCut = 0;
+
+    var p1 = string.Empty;
+
+    var i = 0;
+    
+    while (shortCut == 0)
+    {
+      i++;
+
+      Dance(dances, chars);
+
+      if (string.IsNullOrEmpty(p1))
+      {
+        p1 = string.Join("", chars);
+      }
+
+      if (Enumerable.SequenceEqual(constant, chars)) //After a certain amount of loops, the sequence will reset itself. The amount of loops it takes is the modulo we can apply to 1 billion rounds.
+      {
+        System.Console.WriteLine($"After {i} rounds we've looped back around. Shortcut?");
+        shortCut = i;
+      }
+    }
+
+    chars = constant.ToCharArray(); //Reset the loop before reprocessing.
+
+    for(var iteration = 0; iteration < 1000000000 % shortCut; iteration++)
+    {
+      Dance(dances, chars);
+    }
+
+    return OutputResult(p1, string.Join("", chars));
+  }
+
+  private static void Dance(string[] dances, char[] chars)
+  {
+    foreach (var line in dances)
+    {
+      switch (line[0])
+      {
+        case 's':
+          {
+            //Spin. Take the last element of the array, move it to the front, then append the rest.
+
+            for (var spins = 0; spins < int.Parse(line.Substring(1)); spins++)
+            {
+              var len = chars.Length - 1;
+              var temp = chars.Take(len).ToArray();
+              chars[0] = chars[len];
+
+              for (var remainder = 1; remainder <= len; remainder++)
+              {
+                chars[remainder] = temp[remainder - 1];
+              }
+            }
+          }
+          break;
+        case 'x':
+          {
+            //Exchange
+            var split = line.Split('/');
+            SwapChars(int.Parse($"{split[0].Substring(1)}"), int.Parse($"{split[1]}"), ref chars);
+          }
+          break;
+        case 'p':
+          {
+            //Partner
+            SwapChars(Array.IndexOf(chars, line[1]), Array.IndexOf(chars, line[3]), ref chars);
+          }
+          break;
+      }
+    }
+  }
+
+  public static void SwapChars(int index1, int index2, ref char[] target)
+  {
+    char temp = target[index1];
+    target[index1] = target[index2];
+    target[index2] = temp;
   }
 }
