@@ -1223,7 +1223,7 @@ public static partial class Days
     var p1 = string.Empty;
 
     var i = 0;
-    
+
     while (shortCut == 0)
     {
       i++;
@@ -1244,7 +1244,7 @@ public static partial class Days
 
     chars = constant.ToCharArray(); //Reset the loop before reprocessing.
 
-    for(var iteration = 0; iteration < 1000000000 % shortCut; iteration++)
+    for (var iteration = 0; iteration < 1000000000 % shortCut; iteration++)
     {
       Dance(dances, chars);
     }
@@ -1297,5 +1297,54 @@ public static partial class Days
     char temp = target[index1];
     target[index1] = target[index2];
     target[index2] = temp;
+  }
+
+  public static string Day17()
+  {
+    var buffer = new LinkedList<int>();
+
+    var steps = 371;
+
+    buffer.AddFirst(0); //Initial state
+
+    var currentNode = buffer.Find(0);
+
+    SpinLock(steps, 2017, currentNode, ref buffer);
+
+    currentNode = buffer.Find(2017);
+
+    var p1 = currentNode.Next.Value.ToString();
+
+    buffer = new LinkedList<int>();
+
+    buffer.AddFirst(0); 
+
+    currentNode = buffer.Find(0); //Reset the buffer, and everything else.
+
+    SpinLock(steps, 50000000, currentNode, ref buffer);
+
+    currentNode = buffer.Find(0);
+
+    var p2 = currentNode.Next.Value.ToString();
+
+    return OutputResult(p1, p2);
+  }
+
+  private static void SpinLock(int steps, int values, LinkedListNode<int> currentNode, ref LinkedList<int> buffer)
+  {
+    for(var i = 1; i <= values; i++)
+    {
+      for(var step = 0; step < (steps % buffer.Count); step++)
+      {
+        currentNode = currentNode.Next;
+        if(currentNode == null)
+        {
+          currentNode = buffer.First; //We've looped around.
+        }
+      }
+      
+      buffer.AddAfter(currentNode, i);
+      currentNode = currentNode.Next; //Set the current node to the node just insterted.
+    }
   }
 }

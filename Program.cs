@@ -1,9 +1,13 @@
 using System;
+using System.Diagnostics;
 
 public class Program
 {
   static void Main(string[] args)
   {
+    var sw = new Stopwatch();
+    sw.Start();
+
     // Console.WriteLine("Day 1:" + Days.Day1());
 
     // Console.WriteLine("Day 2:" + Days.Day2());
@@ -34,6 +38,12 @@ public class Program
 
     // System.Console.WriteLine("Day 15:" + Days.Day15());
 
-    System.Console.WriteLine("Day 16:" + Days.Day16());
+    // System.Console.WriteLine("Day 16:" + Days.Day16());
+
+    System.Console.WriteLine("Day 17:" + Days.Day17());
+
+    sw.Stop();
+
+    System.Console.WriteLine($"Took: {sw.ElapsedMilliseconds}ms.");
   }
 }
