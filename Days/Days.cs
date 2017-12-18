@@ -1367,15 +1367,15 @@ public static partial class Days
 
     var input = File.ReadAllLines(Day18Input);
 
-    var registers = Enumerable.Range('a', 26).Select(x => (char)x).ToDictionary(x => $"{x}", y => 0);
+    var registers = Enumerable.Range('a', 26).Select(x => (char)x).ToDictionary(x => $"{x}", y => (long)0);
 
-    var snd = 0;
+    long snd = 0;
 
-    var p1 = 0;
+    long p1 = 0;
 
-    for (var line = 0; line < input.Length && line > -1;)
+    for (long line = 0; line < input.Length && line > -1;)
     {
-      int val;
+      long val;
 
       var split = input[line].Split(' ');
 
@@ -1383,7 +1383,7 @@ public static partial class Days
       {
         case "snd":
           {
-            if (!int.TryParse(split[1], out val))
+            if (!long.TryParse(split[1], out val))
             {
               val = registers[split[1]];
             }
@@ -1395,7 +1395,7 @@ public static partial class Days
           break;
         case "set":
           {
-            if (!int.TryParse(split[2], out val))
+            if (!long.TryParse(split[2], out val))
             {
               val = registers[split[2]];
             }
@@ -1407,7 +1407,7 @@ public static partial class Days
           break;
         case "add":
           {
-            if (!int.TryParse(split[2], out val))
+            if (!long.TryParse(split[2], out val))
             {
               val = registers[split[2]];
             }
@@ -1419,7 +1419,7 @@ public static partial class Days
           break;
         case "mul":
           {
-            if (!int.TryParse(split[2], out val))
+            if (!long.TryParse(split[2], out val))
             {
               val = registers[split[2]];
             }
@@ -1431,7 +1431,7 @@ public static partial class Days
           break;
         case "mod":
           {
-            if (!int.TryParse(split[2], out val))
+            if (!long.TryParse(split[2], out val))
             {
               val = registers[split[2]];
             }
@@ -1443,7 +1443,7 @@ public static partial class Days
           break;
         case "rcv":
           {
-            if (!int.TryParse(split[1], out val))
+            if (!long.TryParse(split[1], out val))
             {
               val = registers[split[1]];
             }
@@ -1461,14 +1461,14 @@ public static partial class Days
           break;
         case "jgz":
           {
-            if (!int.TryParse(split[1], out val))
+            if (!long.TryParse(split[1], out val))
             {
               val = registers[split[1]];
             }
 
             if (val > 0)
             {
-              if (!int.TryParse(split[2], out var val2))
+              if (!long.TryParse(split[2], out long val2))
               {
                 val2 = registers[split[2]];
               }
