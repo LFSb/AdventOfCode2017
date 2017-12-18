@@ -57,6 +57,8 @@ public static partial class Days
 
   private const string Day16Input = "Days/Input/Day16.txt";
 
+  private const string Day18Input = "Days/Input/Day18.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -1317,7 +1319,7 @@ public static partial class Days
 
     buffer = new LinkedList<int>();
 
-    buffer.AddFirst(0); 
+    buffer.AddFirst(0);
 
     currentNode = buffer.Find(0); //Reset the buffer, and everything else.
 
@@ -1332,19 +1334,166 @@ public static partial class Days
 
   private static void SpinLock(int steps, int values, LinkedListNode<int> currentNode, ref LinkedList<int> buffer)
   {
-    for(var i = 1; i <= values; i++)
+    for (var i = 1; i <= values; i++)
     {
-      for(var step = 0; step < (steps % buffer.Count); step++)
+      for (var step = 0; step < (steps % buffer.Count); step++)
       {
         currentNode = currentNode.Next;
-        if(currentNode == null)
+        if (currentNode == null)
         {
           currentNode = buffer.First; //We've looped around.
         }
       }
-      
+
       buffer.AddAfter(currentNode, i);
       currentNode = currentNode.Next; //Set the current node to the node just insterted.
     }
+  }
+
+  public static string Day18()
+  {
+    //     var input = new string[]{
+    // "set a 1",
+    // "add a 2",
+    // "mul a a",
+    // "mod a 5",
+    // "snd a",
+    // "set a 0",
+    // "rcv a",
+    // "jgz a -1",
+    // "set a 1",
+    // "jgz a -2"
+    //     };
+
+    var input = File.ReadAllLines(Day18Input);
+
+    var registers = Enumerable.Range('a', 26).Select(x => (char)x).ToDictionary(x => $"{x}", y => 0);
+
+    var snd = 0;
+
+    var p1 = 0;
+
+    for (var line = 0; line < input.Length && line > 0;)
+    {
+      int val;
+
+      var split = input[line].Split(' ');
+
+      switch (split[0])
+      {
+        case "snd":
+          {
+            if (int.TryParse(split[1], out val))
+            {
+              snd = val;
+            }
+            else
+            {
+              snd = registers[split[1]];
+            }
+
+            line++;
+          }
+          break;
+        case "set":
+          {
+            if (int.TryParse(split[2], out val))
+            {
+              registers[split[1]] = val;
+            }
+            else
+            {
+              registers[split[1]] = registers[split[2]];
+            }
+
+            line++;
+          }
+          break;
+        case "add":
+          {
+            if (int.TryParse(split[2], out val))
+            {
+              registers[split[1]] += int.Parse(split[2]);
+            }
+            else
+            {
+              registers[split[1]] += registers[split[2]];
+            }
+
+            line++;
+          }
+          break;
+        case "mul":
+          {
+            if (int.TryParse(split[2], out val))
+            {
+              registers[split[1]] *= val;
+            }
+            else
+            {
+              registers[split[1]] *= registers[split[2]];
+            }
+
+            line++;
+          }
+          break;
+        case "mod":
+          {
+            if (int.TryParse(split[2], out val))
+            {
+              registers[split[1]] = registers[split[1]] % val;
+            }
+            else
+            {
+              registers[split[1]] = registers[split[1]] % registers[split[2]];
+            }
+
+            line++;
+          }
+          break;
+        case "rcv":
+          {
+            if (!int.TryParse(split[1], out val))
+            {
+              val = registers[split[1]];
+            }
+
+            if (val != 0)
+            {
+              p1 = snd;
+              line = input.Length; //We're done!
+            }
+            else
+            {
+              line++;
+            }
+          }
+          break;
+        case "jgz":
+          {
+            if (!int.TryParse(split[1], out val))
+            {
+              val = registers[split[1]];
+            }
+
+            if (val > 0)
+            {
+              if (!int.TryParse(split[2], out var val2))
+              {
+                val2 = registers[split[2]];
+              }
+
+              line += val2;
+            }
+            else
+            {
+              line++;
+            }
+          }
+          break;
+      }
+    }
+
+    return OutputResult(p1.ToString(), "");
   }
 }
