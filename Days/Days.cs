@@ -1352,7 +1352,7 @@ public static partial class Days
 
   public static string Day18()
   {
-    //     var input = new string[]{
+    // var input = new string[]{
     // "set a 1",
     // "add a 2",
     // "mul a a",
@@ -1373,7 +1373,7 @@ public static partial class Days
 
     var p1 = 0;
 
-    for (var line = 0; line < input.Length && line > 0;)
+    for (var line = 0; line < input.Length && line > -1;)
     {
       int val;
 
@@ -1383,70 +1383,60 @@ public static partial class Days
       {
         case "snd":
           {
-            if (int.TryParse(split[1], out val))
+            if (!int.TryParse(split[1], out val))
             {
-              snd = val;
+              val = registers[split[1]];
             }
-            else
-            {
-              snd = registers[split[1]];
-            }
+
+            snd = val;
 
             line++;
           }
           break;
         case "set":
           {
-            if (int.TryParse(split[2], out val))
+            if (!int.TryParse(split[2], out val))
             {
-              registers[split[1]] = val;
+              val = registers[split[2]];
             }
-            else
-            {
-              registers[split[1]] = registers[split[2]];
-            }
+
+            registers[split[1]] = val;
 
             line++;
           }
           break;
         case "add":
           {
-            if (int.TryParse(split[2], out val))
+            if (!int.TryParse(split[2], out val))
             {
-              registers[split[1]] += int.Parse(split[2]);
+              val = registers[split[2]];
             }
-            else
-            {
-              registers[split[1]] += registers[split[2]];
-            }
+
+            registers[split[1]] += val;
 
             line++;
           }
           break;
         case "mul":
           {
-            if (int.TryParse(split[2], out val))
+            if (!int.TryParse(split[2], out val))
             {
-              registers[split[1]] *= val;
+              val = registers[split[2]];
             }
-            else
-            {
-              registers[split[1]] *= registers[split[2]];
-            }
+
+            registers[split[1]] *= val;
 
             line++;
           }
           break;
         case "mod":
           {
-            if (int.TryParse(split[2], out val))
+            if (!int.TryParse(split[2], out val))
             {
-              registers[split[1]] = registers[split[1]] % val;
+              val = registers[split[2]];
             }
-            else
-            {
-              registers[split[1]] = registers[split[1]] % registers[split[2]];
-            }
+
+            registers[split[1]] = registers[split[1]] % val;
 
             line++;
           }
