@@ -1352,19 +1352,6 @@ public static partial class Days
 
   public static string Day18()
   {
-    // var input = new string[]{
-    // "set a 1",
-    // "add a 2",
-    // "mul a a",
-    // "mod a 5",
-    // "snd a",
-    // "set a 0",
-    // "rcv a",
-    // "jgz a -1",
-    // "set a 1",
-    // "jgz a -2"
-    //     };
-
     var input = File.ReadAllLines(Day18Input);
 
     var registers = Enumerable.Range('a', 26).Select(x => (char)x).ToDictionary(x => $"{x}", y => (long)0);
