@@ -1508,11 +1508,12 @@ public static partial class Days
 
     var directions = Enum.GetValues(typeof(GridDirection)).Cast<GridDirection>().ToArray();
 
+    var p2 = 0;
+
     while (letterQueue.Count != finish)
     {
       current = input[currentPosition.Item1][currentPosition.Item2];
-      System.Console.WriteLine($"{currentPosition} : {current}");
-
+      
       switch (current)
       {
         case '-':
@@ -1556,9 +1557,11 @@ public static partial class Days
           }
           break;
       }
+
+      p2++;
     }
 
-    return OutputResult(string.Join("", letterQueue.Select(x => x)), "");
+    return OutputResult(string.Join("", letterQueue.Select(x => x)), p2.ToString());
   }
 
   private static bool IsHorizontal(GridDirection direction) => direction == GridDirection.Left || direction == GridDirection.Right;
