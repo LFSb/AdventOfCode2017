@@ -59,6 +59,16 @@ public static partial class Days
 
   private const string Day18Input = "Days/Input/Day18.txt";
 
+  private const string Day19Input = "Days/Input/Day19.txt";
+
+  private const string Day19TestInput = @"     |          
+     |  +--+    
+     A  |  C    
+ F---|----E|--+ 
+     |  |  |  D 
+     +B-+  +--+ 
+";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -1476,85 +1486,73 @@ public static partial class Days
 
   public static string Day19()
   {
-    var input = @"     |          
-     |  +--+    
-     A  |  C    
- F---|----E|--+ 
-     |  |  |  D 
-     +B-+  +--+ 
-".Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+     var input = File.ReadAllText(Day19Input)
+      // var input = Day19TestInput
+    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
 .Select(line => line.ToCharArray())
 .ToArray();
 
-    var finish = input.SelectMany(x => x).Where(x => char.IsLetter(x)).Max();
+    var finish = input.SelectMany(x => x).Where(x => char.IsLetter(x)).Count();
 
     var start = Array.IndexOf(input[0], input[0].First(x => x != ' '));
-
-    var visited = new List<Tuple<int, int>>();
 
     var currentPosition = new Tuple<int, int>(0, start);
 
     var letterQueue = new Queue<char>();
 
-    var previousDirection = GridDirection.Any;
+    var previousDirection = GridDirection.Down;
 
     char current = ' ';
 
-    while (current != finish)
-    {
-      visited.Add(currentPosition);
+    var notAllowed = new char[] { ' ', '+' }; //from a decision space ('+') we can't end up on either a space, or a different decision space.
 
+    var directions = Enum.GetValues(typeof(GridDirection)).Cast<GridDirection>().ToArray();
+
+    while (letterQueue.Count != finish)
+    {
       current = input[currentPosition.Item1][currentPosition.Item2];
+      System.Console.WriteLine($"{currentPosition} : {current}");
 
       switch (current)
       {
+        case '-':
         case '|':
           {
-            //We can move either up, or down.
-            currentPosition = CalculateNextMove(currentPosition, input, visited, GridDirection.Vertical);
-            previousDirection = GridDirection.Vertical;
-          }
-          break;
-        case '-':
-          {
-            //We can move either left, or right.
-
-            if (previousDirection == GridDirection.Vertical)
-            {
-              //Are we crossing a line?
-
-              var newPosition = CalculateNextMove(currentPosition, input, visited, GridDirection.Vertical);
-
-              if (visited.Contains(newPosition)) //Only move horizontal when we really can't do anything else.
-              {
-                currentPosition = CalculateNextMove(currentPosition, input, visited, GridDirection.Horizontal);
-                previousDirection = GridDirection.Horizontal;
-              }
-              else
-              {
-                currentPosition = newPosition;
-              }
-            }
-            else
-            {
-              currentPosition = CalculateNextMove(currentPosition, input, visited, GridDirection.Horizontal);
-              previousDirection = GridDirection.Horizontal;
-            }
+            currentPosition = CalculateNextPosition(currentPosition, input, previousDirection);
           }
           break;
         case '+':
           {
-            //We can move up, down, left or right.
-            var newPosition = CalculateNextMove(currentPosition, input, visited, GridDirection.Any);
-            previousDirection = CalculateDirection(currentPosition, newPosition);
-            currentPosition = newPosition;
+            var directionsToSearch = directions.Where(direction => direction != Opposite(previousDirection)).ToArray();
+            Tuple<int, int> nextPosition;
+
+            foreach (var direction in directionsToSearch)
+            {
+              nextPosition = CalculateNextPosition(currentPosition, input, direction);
+
+              if (nextPosition != null)
+              {
+                if (!notAllowed.Contains(input[nextPosition.Item1][nextPosition.Item2]))
+                {
+                  if(
+                    IsHorizontal(direction) && input[nextPosition.Item1][nextPosition.Item2] != '|'
+                    || IsVertical(direction) && input[nextPosition.Item1][nextPosition.Item2] != '-'
+                    )
+                  {
+                    previousDirection = direction;
+                    currentPosition = nextPosition;
+                  }
+                  break;
+                }
+              }
+            }
           }
           break;
         default:
           {
             letterQueue.Enqueue(current); //We should keep going in the same direction.
-            currentPosition = CalculateNextMove(currentPosition, input, visited, previousDirection);
             System.Console.WriteLine($"Came across '{current}'");
+            currentPosition = CalculateNextPosition(currentPosition, input, previousDirection);
           }
           break;
       }
@@ -1563,82 +1561,69 @@ public static partial class Days
     return OutputResult(string.Join("", letterQueue.Select(x => x)), "");
   }
 
-  private static GridDirection CalculateDirection(Tuple<int, int> currentPosition, Tuple<int, int> newPosition)
+  private static bool IsHorizontal(GridDirection direction) => direction == GridDirection.Left || direction == GridDirection.Right;
+
+  private static bool IsVertical(GridDirection direction) => direction == GridDirection.Up || direction == GridDirection.Down;
+
+  private static GridDirection Opposite(GridDirection direction)
   {
-    return currentPosition.Item1 != newPosition.Item1 ? GridDirection.Vertical : GridDirection.Horizontal;
+    switch (direction)
+    {
+      case GridDirection.Up:
+        {
+          return GridDirection.Down;
+        }
+      case GridDirection.Right:
+        {
+          return GridDirection.Left;
+        }
+      case GridDirection.Left:
+        {
+          return GridDirection.Right;
+        }
+      case GridDirection.Down:
+        {
+          return GridDirection.Up;
+        }
+      default:
+        {
+          throw new NotImplementedException();
+        }
+    }
+  }
+
+  private static Tuple<int, int> CalculateNextPosition(Tuple<int, int> currentPosition, char[][] input, GridDirection previousDirection)
+  {
+    switch (previousDirection)
+    {
+      case GridDirection.Down:
+        {
+          return currentPosition.Item1 + 1 < input.Length ? new Tuple<int, int>(currentPosition.Item1 + 1, currentPosition.Item2) : null;
+        }
+      case GridDirection.Up:
+        {
+          return currentPosition.Item1 - 1 > -1 ? new Tuple<int, int>(currentPosition.Item1 - 1, currentPosition.Item2) : null;
+        }
+      case GridDirection.Left:
+        {
+          return currentPosition.Item2 - 1 > -1 ? new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 - 1) : null;
+        }
+      case GridDirection.Right:
+        {
+          return currentPosition.Item2 + 1 < input.First().Length ? new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 + 1) : null;
+        }
+      default:
+        {
+          return null;
+        }
+    }
   }
 
   private enum GridDirection
   {
-    Vertical,
-    Horizontal,
-    Any
-  }
-
-  private static Tuple<int, int> CalculateNextMove(Tuple<int, int> currentPosition, char[][] input, List<Tuple<int, int>> visited, GridDirection direction)
-  {
-    switch (direction)
-    {
-      case GridDirection.Vertical:
-        {
-          return TryMoveVertical(currentPosition, visited, input);
-        }
-      case GridDirection.Horizontal:
-        {
-          return TryMoveHorizontal(currentPosition, visited, input);
-        }
-      default:
-        {
-          var vert = TryMoveVertical(currentPosition, visited, input);
-
-          if (visited.Contains(vert))
-          {
-            return TryMoveHorizontal(currentPosition, visited, input);
-          }
-
-          return vert;
-        }
-    }
-  }
-
-  private static Tuple<int, int> TryMoveHorizontal(Tuple<int, int> currentPosition, List<Tuple<int, int>> visited, char[][] input)
-  {
-    var newPosition = visited.Contains(new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 - 1)) || currentPosition.Item2 - 1 < 0
-            ? new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 + 1)
-            : new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 - 1);
-
-    var notAllowed = new[] { ' ' };
-
-    if (notAllowed.Contains(input[newPosition.Item1][newPosition.Item2]))
-    {
-      visited.Add(newPosition);
-    }
-
-    return visited.Contains(new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 - 1)) || currentPosition.Item2 - 1 < 0
-            ? new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 + 1)
-            : new Tuple<int, int>(currentPosition.Item1, currentPosition.Item2 - 1);
-  }
-
-  private static Tuple<int, int> TryMoveVertical(Tuple<int, int> currentPosition, List<Tuple<int, int>> visited, char[][] input)
-  {
-    var newPosition = visited.Contains(new Tuple<int, int>(currentPosition.Item1 - 1, currentPosition.Item2)) || currentPosition.Item1 - 1 < 0
-    ? new Tuple<int, int>(currentPosition.Item1 + 1, currentPosition.Item2)
-    : new Tuple<int, int>(currentPosition.Item1 - 1, currentPosition.Item2);
-
-    var notAllowed = new[] { ' ' };
-
-    if (newPosition.Item1 < 0 || newPosition.Item1 == input.Length)
-    {
-      return currentPosition;
-    }
-
-    if (notAllowed.Contains(input[newPosition.Item1][newPosition.Item2]))
-    {
-      visited.Add(newPosition);
-    }
-
-    return visited.Contains(new Tuple<int, int>(currentPosition.Item1 - 1, currentPosition.Item2)) || currentPosition.Item1 - 1 < 0
-    ? new Tuple<int, int>(currentPosition.Item1 + 1, currentPosition.Item2)
-    : new Tuple<int, int>(currentPosition.Item1 - 1, currentPosition.Item2);
+    Up,
+    Down,
+    Left,
+    Right
   }
 }
