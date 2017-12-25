@@ -69,6 +69,8 @@ public static partial class Days
      +B-+  +--+ 
 ";
 
+  private const string Day20Input = "Days/Input/Day20.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -1486,11 +1488,10 @@ public static partial class Days
 
   public static string Day19()
   {
-     var input = File.ReadAllText(Day19Input)
-      // var input = Day19TestInput
-    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-.Select(line => line.ToCharArray())
-.ToArray();
+    var input = File.ReadAllText(Day19Input)
+   .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+   .Select(line => line.ToCharArray())
+   .ToArray();
 
     var finish = input.SelectMany(x => x).Where(x => char.IsLetter(x)).Count();
 
@@ -1513,7 +1514,7 @@ public static partial class Days
     while (letterQueue.Count != finish)
     {
       current = input[currentPosition.Item1][currentPosition.Item2];
-      
+
       switch (current)
       {
         case '-':
@@ -1535,7 +1536,7 @@ public static partial class Days
               {
                 if (!notAllowed.Contains(input[nextPosition.Item1][nextPosition.Item2]))
                 {
-                  if(
+                  if (
                     IsHorizontal(direction) && input[nextPosition.Item1][nextPosition.Item2] != '|'
                     || IsVertical(direction) && input[nextPosition.Item1][nextPosition.Item2] != '-'
                     )
@@ -1628,5 +1629,85 @@ public static partial class Days
     Down,
     Left,
     Right
+  }
+
+  public static string Day20()
+  {
+    var input = File.ReadAllLines(Day20Input);
+
+    var particles = new List<Particle>();
+
+    for (var number = 0; number < input.Length; number++)
+    {
+      particles.Add(new Particle(input[number], number));
+    }
+
+    var p1 = particles.OrderBy(particle => particle.ManhattanDistance(particle.Acceleration)).First().ParticleIndex;
+
+    var p2 = Collide(particles);
+
+    return OutputResult(p1.ToString(), p2.ToString());
+  }
+
+  private static int Collide(List<Particle> particles)
+  {
+    var possibleCollisions = 100;
+
+    while(possibleCollisions > 0)
+    {
+      foreach (var particle in particles)
+      {
+        particle.Update();
+      }
+
+      var collided = particles.GroupBy(x => x.Position).Where(y => y.Count() > 1).SelectMany(x => x.Select(y => y.ParticleIndex)).ToArray();
+
+      particles.RemoveAll(x => collided.Contains(x.ParticleIndex));
+
+      possibleCollisions--;
+    }
+    
+    return particles.Count();
+  }
+
+  public class Particle
+  {
+    public Tuple<int, int, int> Position { get; set; }
+
+    public Tuple<int, int, int> Velocity { get; set; }
+
+    public Tuple<int, int, int> Acceleration { get; set; }
+
+    public int ParticleIndex { get; set; }
+
+    public Particle(string input, int number)
+    {
+      var rows = input.Split(new[] { ">," }, StringSplitOptions.RemoveEmptyEntries)
+      .Select(row => row.Trim().Substring(3).Trim('>'))
+      .Select(coord => coord.Split(',').Select(int.Parse).ToArray())
+      .ToArray();
+
+      Position = new Tuple<int, int, int>(rows[0][0], rows[0][1], rows[0][2]);
+
+      Velocity = new Tuple<int, int, int>(rows[1][0], rows[1][1], rows[1][2]);
+
+      Acceleration = new Tuple<int, int, int>(rows[2][0], rows[2][1], rows[2][2]);
+
+      ParticleIndex = number;
+    }
+
+    public int ManhattanDistance(Tuple<int, int, int> target) => Math.Abs(target.Item1) + Math.Abs(target.Item2) + Math.Abs(target.Item3);
+
+    public void Update()
+    {
+      Velocity = Calculate(Velocity, Acceleration);
+      Position = Calculate(Position, Velocity);
+    }
+
+    private Tuple<int, int, int> Calculate(Tuple<int, int, int> source, Tuple<int, int, int> additional) => new Tuple<int, int, int>(
+      source.Item1 + additional.Item1,
+      source.Item2 + additional.Item2,
+      source.Item3 + additional.Item3
+    );
   }
 }

@@ -44,7 +44,9 @@ public class Program
 
     // System.Console.WriteLine("Day 18:" + Days.Day18());
 
-    System.Console.WriteLine("Day 19:" + Days.Day19());
+    // System.Console.WriteLine("Day 19:" + Days.Day19());
+
+    System.Console.WriteLine("Day 20:" + Days.Day20());
 
     sw.Stop();
 
