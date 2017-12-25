@@ -71,6 +71,8 @@ public static partial class Days
 
   private const string Day20Input = "Days/Input/Day20.txt";
 
+  private const string Day21Input = "Days/Input/Day21.txt";
+
   private static string[] Day4TestInput = new string[]
   {
     "aa bb cc dd ee",
@@ -1653,7 +1655,7 @@ public static partial class Days
   {
     var possibleCollisions = 100;
 
-    while(possibleCollisions > 0)
+    while (possibleCollisions > 0)
     {
       foreach (var particle in particles)
       {
@@ -1664,9 +1666,9 @@ public static partial class Days
 
       particles.RemoveAll(x => collided.Contains(x.ParticleIndex));
 
-      possibleCollisions--;
+      possibleCollisions--; //There's probably a better way to calculate this. But for now, this'll do.
     }
-    
+
     return particles.Count();
   }
 
@@ -1709,5 +1711,25 @@ public static partial class Days
       source.Item2 + additional.Item2,
       source.Item3 + additional.Item3
     );
+  }
+
+  public static string Day21()
+  {
+    var startingPattern = @".#.
+..#
+###"
+    .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+    .Select(x => x.ToCharArray().Select(y => y == '#').ToArray()).ToArray();
+
+    var size = startingPattern.Length;
+
+
+    if(size % 2 == 0)
+    {
+
+    }
+
+
+    return OutputResult("", "");
   }
 }
