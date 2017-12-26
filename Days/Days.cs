@@ -1722,19 +1722,23 @@ public static partial class Days
     .Select(x => x.ToCharArray().Select(y => y == '#').ToArray()).ToArray();
 
     var size = startingPattern.Length;
-    
+
     Print(startingPattern);
 
-    for(var i = 0; i < 4; i++)
-    {
-      Rotate(startingPattern);  
+    // for (var i = 0; i < 4; i++)
+    // {
+    //   Rotate(startingPattern);
 
-      System.Console.WriteLine(new string('-', size));
+    //   System.Console.WriteLine(new string('-', size));
 
-      System.Console.WriteLine("90d flip:");
+    //   Print(startingPattern);
+    // }
 
-      Print(startingPattern);
-    }   
+    System.Console.WriteLine(new string('-', size));
+
+    Mirror(startingPattern);
+
+    Print(startingPattern);
 
     return OutputResult("", "");
   }
@@ -1747,23 +1751,40 @@ public static partial class Days
   private static void Rotate(bool[][] input)
   {
     var rows = input.Select(array => (bool[])array.Clone()).ToArray(); //Create an actual new array, don't copy the old one.
-    
+
     var row = 0;
 
-    for(var height = input.First().Length - 1; height > -1 ; height--)
+    for (var height = input.First().Length - 1; height > -1; height--)
     {
-      for(var length = 0; length < input.Length; length++)
+      for (var length = 0; length < input.Length; length++)
       {
         input[length][height] = rows[row][length];
       }
-      
+
       row++;
-    }    
+    }
+  }
+
+  private static void Mirror(bool[][] input)
+  {
+    var division = input.Length / 2; //Divide by two. If not neatly dividable by two, it will round down, which we want.
+
+    var length = input.Length - 1;
+
+    for (var row = 0; row < input.Length; row++)
+    {
+      for (var i = 0; i < division; i++)
+      {
+        var temp = input[row][length - i];
+        input[row][length - i] = input[row][i];
+        input[row][i] = temp;
+      }
+    }
   }
 
   private static void Print(bool[][] input)
   {
-    foreach(var i in input)
+    foreach (var i in input)
     {
       System.Console.WriteLine(string.Join("", i.Select(x => x ? "#" : ".")));
     }
