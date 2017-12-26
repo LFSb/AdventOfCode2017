@@ -1722,14 +1722,50 @@ public static partial class Days
     .Select(x => x.ToCharArray().Select(y => y == '#').ToArray()).ToArray();
 
     var size = startingPattern.Length;
+    
+    Print(startingPattern);
 
-
-    if(size % 2 == 0)
+    for(var i = 0; i < 4; i++)
     {
+      Rotate(startingPattern);  
 
-    }
+      System.Console.WriteLine(new string('-', size));
 
+      System.Console.WriteLine("90d flip:");
+
+      Print(startingPattern);
+    }   
 
     return OutputResult("", "");
+  }
+
+  //to rotate: Take each row (the first array). 
+  //The index of each value in said row will correspond to the index of the array in which it needs to be placed.
+  //[0][0] to [0][2], [0][1] to [1][2] and [0][2] to [2][2]. 
+  //[1][0] to [0][1], [1][1] to [1][1] and [1][2] to [2][1]
+  //[2][0] to [0][0], [2][1] to [1][0] and [2][2] to [2][0]
+  private static void Rotate(bool[][] input)
+  {
+    var rows = input.Select(array => (bool[])array.Clone()).ToArray(); //Create an actual new array, don't copy the old one.
+    
+    var row = 0;
+
+    for(var height = input.First().Length - 1; height > -1 ; height--)
+    {
+      for(var length = 0; length < input.Length; length++)
+      {
+        input[length][height] = rows[row][length];
+      }
+      
+      row++;
+    }    
+  }
+
+  private static void Print(bool[][] input)
+  {
+    foreach(var i in input)
+    {
+      System.Console.WriteLine(string.Join("", i.Select(x => x ? "#" : ".")));
+    }
   }
 }
